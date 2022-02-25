@@ -1,0 +1,214 @@
+<html lang="ja">
+<head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="ワードなどのDOCX形式のファイルを青空文庫形式に変換する。出力された青空文庫形式のZIPやテキストはAozoraEpub3でEPUBに変換ができる。">
+    <!--OGP -->
+    <meta property="og:title" content="DOCX青空文庫変換" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://kyukyunyorituryo.github.io/docx2aozora/" />
+    <meta property="og:image" content="https://kyukyunyorituryo.github.io/docx2aozora/twitter.png" />
+    <meta property="og:site_name" content="DOCX青空文庫変換" />
+    <meta property="og:description" content="ワードなどのDOCX形式のファイルを青空文庫形式に変換する" />
+    <!--Twitterカード -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@99nyorituryo">
+    <meta name="twitter:creator" content="@99nyorituryo">
+    <meta name="twitter:title" content="DOCX青空文庫変換">
+    <meta name="twitter:description" content="ワードなどのDOCX形式のファイルを青空文庫形式に変換する">
+    <meta name="twitter:image:src" content="https://kyukyunyorituryo.github.io/kindle_sale/twitter.png">
+    <link rel="shortcut icon" href="favicon.ico" type="image/vnd.microsoft.icon" />
+    <link rel="icon" href="favicon.ico" type="image/vnd.microsoft.icon" />
+    <title>DOCXを青空文庫形式に変換する</title>
+    <!-- CSS only -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
+    <!-- mammoth -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mammoth@1.4.8/mammoth.browser.min.js"></script>
+    <script type="text/javascript" src="jszip.js"></script>
+    <script type="text/javascript" src="FileSaver.js"></script>
+
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="https://kyukyunyorituryo.github.io/">Topページ</a>
+            <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#Navber" aria-controls="Navber" aria-expanded="false" aria-label="ナビゲーションの切替">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="Navber">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="https://99nyorituryo.hatenablog.com/">ブログ </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://www.amazon.co.jp/-/e/B07Q2TZFCN">キンドル著者ページ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://github.com/kyukyunyorituryo/">GitHub</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://kyukyunyorituryo.github.io/new_epub/">kindle新刊</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://kyukyunyorituryo.github.io/new_pub/">紙の新刊</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://kyukyunyorituryo.github.io/kindle_sale/">kindleセール</a>
+                    </li>
+
+                </ul>
+
+            </div><!-- /.navbar-collapse -->
+        </nav>
+
+        <h1>DOCX青空文庫変換</h1>
+        <div class="col-md-4">
+            <label class="label label-primary">表題</label>
+            <input type="text" class="form-control " id="title" placeholder="タイトル名">
+
+            <label class="label label-primary">著者１</label>
+            <input type="text" class="form-control" id="author1" placeholder="著者名１">
+
+            <input type="file" onchange="parseWordDocxFile(this)" accept=".docx">
+        </div>
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <a class="nav-link active" id="home-tab" data-bs-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">青空文庫</a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link" id="contact-tab" data-bs-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">HTML</a>
+            </li>
+        </ul>    <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                <h1>青空文庫</h1>
+                <textarea id="aozora_text" rows="20" cols="100">変換後のテキスト</textarea>
+                <div class="col">
+                    <button type="button" class="btn btn-primary" id="zip" onclick="aozorazip()">青空文庫zip作成</button>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+                <h1>HTML</h1><div class="row border-bottom">...</div>
+                <div id="result1">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        var html;
+        var doc;
+        var aozora;
+        var bod
+        var image = [];
+        function parseWordDocxFile(inputElement) {
+            var files = inputElement.files || [];
+            if (!files.length) return;
+            var file = files[0];
+            var reader = new FileReader();
+            reader.onloadend = function (event) {
+                var arrayBuffer = reader.result;
+                // debugger
+
+                mammoth.convertToHtml({ arrayBuffer: arrayBuffer }).then(function (resultObject) {
+                    result1.innerHTML = resultObject.value
+                    //     console.log(resultObject.value)
+                    html = resultObject.value;
+                    let parser = new DOMParser()
+                    doc = parser.parseFromString(html, "text/html")
+                    body = doc.getElementsByTagName('body')[0].childNodes
+                    //   body[0];
+                    aozora = '';
+                    for (let i = 0; i < body.length; i++) {
+                        //     console.log(body[i].localName)
+                        tag = body[i].localName
+                        switch (tag) {
+                            case 'h1':
+                                aozora += "［＃改ページ］\n［＃５字下げ］［＃大見出し］" + body[i].textContent + "［＃大見出し終わり］\n"
+                                break;
+                            case 'h2':
+                                aozora += "［＃改ページ］\n［＃３字下げ］［＃中見出し］" + body[i].textContent + "［＃中見出し終わり］\n"
+                                break;
+                            case 'h3':
+                                aozora += "［＃３字下げ］［＃小見出し］" + body[i].textContent + "［＃小見出し終わり］\n"
+                                break;
+                            case 'p':
+
+                                if (body[i].childElementCount == 0) {
+
+                                    aozora += body[i].textContent + "\n"
+
+                                }
+                                else {
+
+                                    for (let j = 0; j < body[i].childNodes.length; j++) {
+                                        child = body[i].childNodes[j].nodeName
+                                        switch (child) {
+                                            case '#text':
+                                                aozora += body[i].childNodes[j].textContent
+                                                break;
+                                            case 'IMG':
+                                                data = body[i].childNodes[j].src
+                                                ext = data.toString().slice(data.indexOf('/') + 1, data.indexOf(';'))
+                                                imagename = "fig" + (image.length + 1) + "." + ext
+                                                aozora += "［＃画像（" + imagename + "）入る］"
+                                                image.push({ filename: imagename, base64: data })
+                                                break;
+                                            case 'STRONG':
+                                                aozora += "［＃太字］" + body[i].childNodes[j].textContent + "［＃太字終わり］"
+                                                break;
+                                            case 'EM':
+                                                aozora += "［＃斜体］" + body[i].childNodes[j].textContent + "［＃斜体終わり］"
+                                                break;
+                                            case 'S':
+                                                aozora += "［＃取り消し線］" + body[i].childNodes[j].textContent + "［＃取り消し線終わり］"
+                                                break;
+                                            case 'SUP':
+                                                aozora += "［＃上付き小文字］" + body[i].childNodes[j].textContent + "［＃上付き小文字終わり］"
+                                                break;
+                                            case 'SUB':
+                                                aozora += "［＃下付き小文字］" + body[i].childNodes[j].textContent + "［＃下付き小文字終わり］"
+                                                break;
+                                            default:
+                                                aozora += body[i].childNodes[j].textContent
+                                                break;
+
+                                        }
+                                    }
+                                    aozora += '\n';
+                                }
+                                break;
+                        }
+
+                    }
+
+                    document.getElementById('aozora_text').value = aozora
+                })
+                //     console.timeEnd();
+
+            };
+            reader.readAsArrayBuffer(file);
+
+
+        }
+        function aozorazip() {
+            var zip = new JSZip();
+            var title = document.getElementById('title').value
+            var author = document.getElementById('author1').value
+            zip.file("aozora.txt", title + "\n" + author + "\n\n\n" + aozora);
+            //zip.file("smile.gif", imgData, {base64: true});
+            for (j = 0; j < image.length; j++) {
+                zip.file(image[j].filename, image[j].base64.split('base64,')[1], { base64: true });
+            }
+            zip.generateAsync({ type: "blob" })
+                .then(function (content) {
+                    // see FileSaver.js
+                    saveAs(content, title + ".zip");
+                });
+        }
+
+    </script>
+</body>
+</html>
